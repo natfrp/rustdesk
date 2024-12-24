@@ -1168,7 +1168,7 @@ class LegacyAb extends BaseAb {
 
   Map<String, dynamic> _serialize() {
     final peersJsonData =
-        peers.map((e) => e.toCustomJson(includingHash: true)).toList();
+        peers.map((e) => e.toCustomJson(includingHash: false)).toList();
     for (var e in tags) {
       if (tagColors[e] == null) {
         tagColors[e] = str2color2(e, existing: tagColors.values.toList()).value;
