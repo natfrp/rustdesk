@@ -677,7 +677,7 @@ class UpdateMe: Reactor.Component {
     }
 
     event click $(#install-me) {
-        handler.open_url("https://rustdesk.com/download");
+        handler.open_url("https://github.com/natfrp/rustdesk/releases/latest");
         return;
         if (!is_win) {
             handler.open_url("https://rustdesk.com");
