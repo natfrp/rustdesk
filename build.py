@@ -9,6 +9,7 @@ import shutil
 import hashlib
 import argparse
 import sys
+from pathlib import Path
 
 windows = platform.platform().startswith('Windows')
 osx = platform.platform().startswith(
@@ -355,7 +356,7 @@ def build_flutter_deb(version, features):
     system2('mkdir -p tmpdeb/DEBIAN')
     generate_control_file(version)
     system2('cp -a ../res/DEBIAN/* tmpdeb/DEBIAN/')
-    md5_file('usr/share/rustdesk/files/systemd/rustdesk.service')
+    md5_file_folder("tmpdeb/")
     system2('dpkg-deb -b tmpdeb rustdesk.deb;')
 
     system2('/bin/rm -rf tmpdeb/')
@@ -392,7 +393,7 @@ def build_deb_from_folder(version, binary_folder):
     system2('mkdir -p tmpdeb/DEBIAN')
     generate_control_file(version)
     system2('cp -a ../res/DEBIAN/* tmpdeb/DEBIAN/')
-    md5_file('usr/share/rustdesk/files/systemd/rustdesk.service')
+    md5_file_folder("tmpdeb/")
     system2('dpkg-deb -b tmpdeb rustdesk.deb;')
 
     system2('/bin/rm -rf tmpdeb/')
@@ -405,12 +406,13 @@ def build_flutter_dmg(version, features):
     if not skip_cargo:
         # set minimum osx build target, now is 10.14, which is the same as the flutter xcode project
         system2(
-            f'MACOSX_DEPLOYMENT_TARGET=10.14 cargo build --features {features} --lib --release')
+            f'MACOSX_DEPLOYMENT_TARGET=10.14 cargo build --features {features} --release')
     # copy dylib
     system2(
         "cp target/release/liblibrustdesk.dylib target/release/librustdesk.dylib")
     os.chdir('flutter')
     system2('flutter build macos --release')
+    system2('cp -rf ../target/release/service ./build/macos/Build/Products/Release/RustDesk.app/Contents/MacOS/')
     '''
     system2(
         "create-dmg --volname \"RustDesk Installer\" --window-pos 200 120 --window-size 800 400 --icon-size 100 --app-drop-link 600 185 --icon RustDesk.app 200 190 --hide-extension RustDesk.app rustdesk.dmg ./build/macos/Build/Products/Release/RustDesk.app")
@@ -625,18 +627,21 @@ def main():
                 system2('mkdir -p tmpdeb/usr/share/rustdesk')
                 system2('mv tmpdeb/usr/bin/rustdesk tmpdeb/usr/share/rustdesk/')
                 system2('cp libsciter-gtk.so tmpdeb/usr/share/rustdesk/')
-                md5_file('usr/share/rustdesk/files/systemd/rustdesk.service')
-                md5_file('etc/rustdesk/startwm.sh')
-                md5_file('etc/X11/rustdesk/xorg.conf')
-                md5_file('etc/pam.d/rustdesk')
-                md5_file('usr/share/rustdesk/libsciter-gtk.so')
+                md5_file_folder("tmpdeb/")
                 system2('dpkg-deb -b tmpdeb rustdesk.deb; /bin/rm -rf tmpdeb/')
                 os.rename('rustdesk.deb', 'rustdesk-%s.deb' % version)
 
 
 def md5_file(fn):
     md5 = hashlib.md5(open('tmpdeb/' + fn, 'rb').read()).hexdigest()
-    system2('echo "%s %s" >> tmpdeb/DEBIAN/md5sums' % (md5, fn))
+    system2('echo "%s  /%s" >> tmpdeb/DEBIAN/md5sums' % (md5, fn))
+
+def md5_file_folder(base_dir):
+    base_path = Path(base_dir)
+    for file in base_path.rglob('*'):
+        if file.is_file() and 'DEBIAN' not in file.parts:
+            relative_path = file.relative_to(base_path)
+            md5_file(str(relative_path))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 [package]
 name = "rustdesk"
-version = "1.3.6"
+version = "1.3.9"
 authors = ["rustdesk <info@rustdesk.com>"]
 edition = "2021"
 build= "build.rs"
@@ -15,6 +15,10 @@ crate-type = ["cdylib", "staticlib", "rlib"]
 [[bin]]
 name = "naming"
 path = "src/naming.rs"
+
+[[bin]]
+name = "service"
+path = "src/service.rs"
 
 [features]
 inline = []
@@ -112,10 +116,12 @@ winapi = { version = "0.3", features = [
     "cguid",
     "cfgmgr32",
     "ioapiset",
+    "winspool",
 ] }
 winreg = "0.11"
 windows-service = "0.6"
 virtual_display = { path = "libs/virtual_display" }
+remote_printer = { path = "libs/remote_printer" }
 impersonate_system = { git = "https://github.com/rustdesk-org/impersonate-system" }
 shared_memory = "0.12"
 tauri-winrt-notification = "0.1.2"
@@ -173,11 +179,11 @@ jni = "0.21"
 android-wakelock = { git = "https://github.com/rustdesk-org/android-wakelock" }
 
 [workspace]
-members = ["libs/scrap", "libs/hbb_common", "libs/enigo", "libs/clipboard", "libs/virtual_display", "libs/virtual_display/dylib", "libs/portable"]
+members = ["libs/scrap", "libs/hbb_common", "libs/enigo", "libs/clipboard", "libs/virtual_display", "libs/virtual_display/dylib", "libs/portable", "libs/remote_printer"]
 exclude = ["vdi/host", "examples/custom_plugin"]
 
 [package.metadata.winres]
-LegalCopyright = "Copyright © 2024 Purslane Ltd. All rights reserved."
+LegalCopyright = "Copyright © 2025 Purslane Ltd. All rights reserved."
 ProductName = "RustDesk"
 FileDescription = "RustDesk Remote Desktop"
 OriginalFilename = "rustdesk.exe"
@@ -193,6 +199,7 @@ os-version = "0.2"
 
 [dev-dependencies]
 hound = "3.5"
+docopt = "1.1"
 
 [package.metadata.bundle]
 name = "RustDesk"
