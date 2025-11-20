@@ -41,7 +41,7 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
   double? get height => bind.isIncomingOnly() ? null : em * 3;
 
   void onUsePublicServerGuide() {
-    const url = "https://rustdesk.com/pricing";
+    const url = "https://doc.natfrp.com/rd/";
     canLaunchUrlString(url).then((can) {
       if (can) {
         launchUrlString(url);
@@ -94,7 +94,7 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
                       children: [
                         Flexible(
                           child: Text(
-                            translate('setup_server_tip'),
+                            "正在使用由 SakuraFrp 提供的服务器",
                             style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 fontSize: em),
